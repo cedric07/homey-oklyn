@@ -9,22 +9,1279 @@
     "local"
   ],
   "name": {
-    "en": "Oklyn pool"
+    "en": "Oklyn",
+    "fr": "Oklyn"
   },
   "description": {
-    "en": "Adds support for MyBrand devices."
+    "en": "Integrate Oklyn pool controllers with Homey",
+    "fr": "Intègre les coffrets Oklyn dans Homey"
   },
   "category": [
-    "appliances"
+    "climate"
   ],
+  "brandColor": "#0A0A0A",
   "permissions": [],
   "images": {
-    "small": "/assets/images/small.png",
-    "large": "/assets/images/large.png",
-    "xlarge": "/assets/images/xlarge.png"
+    "small": "/assets/images/small.jpg",
+    "large": "/assets/images/large.jpg",
+    "xlarge": "/assets/images/xlarge.jpg"
   },
   "author": {
-    "name": "Cédric Andrietti",
-    "email": "cedric.andrietti@gmail.com"
+    "name": "Cédric Andrietti"
+  },
+  "support": "https://github.com/cedric07/homey-oklyn/issues",
+  "source": "https://github.com/cedric07/homey-oklyn",
+  "bugs": {
+    "url": "https://github.com/cedric07/homey-oklyn/issues"
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "CedricAndrietti"
+      }
+    }
+  },
+  "tags": {
+    "en": [
+      "pool",
+      "oklyn",
+      "filtration",
+      "pH",
+      "ORP",
+      "swimming pool"
+    ],
+    "fr": [
+      "piscine",
+      "oklyn",
+      "filtration",
+      "pH",
+      "redox",
+      "ORP",
+      "coffret"
+    ]
+  },
+  "flow": {
+    "triggers": [
+      {
+        "id": "filtration_started",
+        "title": {
+          "en": "Filtration started",
+          "fr": "Filtration démarrée"
+        },
+        "titleFormatted": {
+          "en": "Filtration started",
+          "fr": "Filtration démarrée"
+        },
+        "highlight": true,
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          }
+        ]
+      },
+      {
+        "id": "filtration_stopped",
+        "title": {
+          "en": "Filtration stopped",
+          "fr": "Filtration arrêtée"
+        },
+        "titleFormatted": {
+          "en": "Filtration stopped",
+          "fr": "Filtration arrêtée"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          }
+        ]
+      },
+      {
+        "id": "measure_status_changed",
+        "title": {
+          "en": "Water quality status changed",
+          "fr": "Statut qualité d'eau modifié"
+        },
+        "titleFormatted": {
+          "en": "Water quality status changed",
+          "fr": "Statut qualité d'eau modifié"
+        },
+        "hint": {
+          "en": "Starts when Oklyn changes a measure (pH, ORP, salt, water or air temperature) to normal, warning or danger. Use the Measure, Status and Value tags in the Flow.",
+          "fr": "Se déclenche quand Oklyn passe une mesure (pH, RedOx, sel, température eau ou air) en normal, avertissement ou danger. Utilise les tags Mesure, Statut et Valeur dans le Flow."
+        },
+        "tokens": [
+          {
+            "name": "measure",
+            "type": "string",
+            "title": {
+              "en": "Measure",
+              "fr": "Mesure"
+            },
+            "example": "ph"
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "title": {
+              "en": "Status",
+              "fr": "Statut"
+            },
+            "example": "warning"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Value",
+              "fr": "Valeur"
+            },
+            "example": 7.2
+          }
+        ],
+        "highlight": true,
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "filtration_running",
+        "title": {
+          "en": "Filtration !{{is|isn't}} running",
+          "fr": "Filtration !{{en marche|à l'arrêt}}"
+        },
+        "titleFormatted": {
+          "en": "Filtration !{{is|isn't}} running",
+          "fr": "Filtration !{{en marche|à l'arrêt}}"
+        },
+        "highlight": true,
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          }
+        ]
+      },
+      {
+        "id": "pump_mode_is",
+        "title": {
+          "en": "Filtration mode !{{is|isn't}}",
+          "fr": "Mode filtration !{{est|n'est pas}}"
+        },
+        "titleFormatted": {
+          "en": "Filtration mode !{{is|isn't}} [[mode]]",
+          "fr": "Mode filtration !{{est|n'est pas}} [[mode]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "label": {
+                  "en": "Auto",
+                  "fr": "Auto"
+                },
+                "title": {
+                  "en": "Auto",
+                  "fr": "Auto"
+                }
+              },
+              {
+                "id": "on",
+                "label": {
+                  "en": "On",
+                  "fr": "Marche"
+                },
+                "title": {
+                  "en": "On",
+                  "fr": "Marche"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "fr": "Arrêt"
+                },
+                "title": {
+                  "en": "Off",
+                  "fr": "Arrêt"
+                }
+              }
+            ],
+            "title": {
+              "en": "Mode",
+              "fr": "Mode"
+            }
+          }
+        ]
+      },
+      {
+        "id": "aux_is_on",
+        "title": {
+          "en": "Auxiliary !{{is|isn't}} on",
+          "fr": "Auxiliaire !{{activé|désactivé}}"
+        },
+        "titleFormatted": {
+          "en": "[[aux]] !{{is|isn't}} on",
+          "fr": "[[aux]] !{{activé|désactivé}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          },
+          {
+            "name": "aux",
+            "type": "autocomplete",
+            "title": {
+              "en": "Auxiliary",
+              "fr": "Auxiliaire"
+            },
+            "placeholder": {
+              "en": "Auxiliary",
+              "fr": "Auxiliaire"
+            }
+          }
+        ]
+      },
+      {
+        "id": "measure_status_is",
+        "title": {
+          "en": "Measurement status !{{is|isn't}}",
+          "fr": "Statut de mesure !{{est|n'est pas}}"
+        },
+        "titleFormatted": {
+          "en": "[[measure]] status !{{is|isn't}} [[status]]",
+          "fr": "Statut [[measure]] !{{est|n'est pas}} [[status]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          },
+          {
+            "name": "measure",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "ph",
+                "label": {
+                  "en": "pH",
+                  "fr": "pH"
+                },
+                "title": {
+                  "en": "pH",
+                  "fr": "pH"
+                }
+              },
+              {
+                "id": "orp",
+                "label": {
+                  "en": "ORP",
+                  "fr": "RedOx"
+                },
+                "title": {
+                  "en": "ORP",
+                  "fr": "RedOx"
+                }
+              },
+              {
+                "id": "salt",
+                "label": {
+                  "en": "Salt",
+                  "fr": "Sel"
+                },
+                "title": {
+                  "en": "Salt",
+                  "fr": "Sel"
+                }
+              },
+              {
+                "id": "water",
+                "label": {
+                  "en": "Water temperature",
+                  "fr": "Température eau"
+                },
+                "title": {
+                  "en": "Water temperature",
+                  "fr": "Température eau"
+                }
+              },
+              {
+                "id": "air",
+                "label": {
+                  "en": "Air temperature",
+                  "fr": "Température air"
+                },
+                "title": {
+                  "en": "Air temperature",
+                  "fr": "Température air"
+                }
+              }
+            ],
+            "title": {
+              "en": "Measure",
+              "fr": "Mesure"
+            }
+          },
+          {
+            "name": "status",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "normal",
+                "label": {
+                  "en": "Normal",
+                  "fr": "Normal"
+                },
+                "title": {
+                  "en": "Normal",
+                  "fr": "Normal"
+                }
+              },
+              {
+                "id": "warning",
+                "label": {
+                  "en": "Warning",
+                  "fr": "Avertissement"
+                },
+                "title": {
+                  "en": "Warning",
+                  "fr": "Avertissement"
+                }
+              },
+              {
+                "id": "danger",
+                "label": {
+                  "en": "Danger",
+                  "fr": "Danger"
+                },
+                "title": {
+                  "en": "Danger",
+                  "fr": "Danger"
+                }
+              }
+            ],
+            "title": {
+              "en": "Status",
+              "fr": "Statut"
+            }
+          }
+        ]
+      },
+      {
+        "id": "measure_above",
+        "title": {
+          "en": "Measurement is above",
+          "fr": "Mesure supérieure à"
+        },
+        "titleFormatted": {
+          "en": "[[measure]] is above [[value]]",
+          "fr": "[[measure]] supérieur à [[value]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          },
+          {
+            "name": "measure",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "ph",
+                "label": {
+                  "en": "pH",
+                  "fr": "pH"
+                },
+                "title": {
+                  "en": "pH",
+                  "fr": "pH"
+                }
+              },
+              {
+                "id": "orp",
+                "label": {
+                  "en": "ORP",
+                  "fr": "RedOx"
+                },
+                "title": {
+                  "en": "ORP",
+                  "fr": "RedOx"
+                }
+              },
+              {
+                "id": "salt",
+                "label": {
+                  "en": "Salt",
+                  "fr": "Sel"
+                },
+                "title": {
+                  "en": "Salt",
+                  "fr": "Sel"
+                }
+              },
+              {
+                "id": "water",
+                "label": {
+                  "en": "Water temperature",
+                  "fr": "Température eau"
+                },
+                "title": {
+                  "en": "Water temperature",
+                  "fr": "Température eau"
+                }
+              },
+              {
+                "id": "air",
+                "label": {
+                  "en": "Air temperature",
+                  "fr": "Température air"
+                },
+                "title": {
+                  "en": "Air temperature",
+                  "fr": "Température air"
+                }
+              }
+            ],
+            "title": {
+              "en": "Measure",
+              "fr": "Mesure"
+            }
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Threshold",
+              "fr": "Seuil"
+            }
+          }
+        ]
+      },
+      {
+        "id": "measure_below",
+        "title": {
+          "en": "Measurement is below",
+          "fr": "Mesure inférieure à"
+        },
+        "titleFormatted": {
+          "en": "[[measure]] is below [[value]]",
+          "fr": "[[measure]] inférieur à [[value]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          },
+          {
+            "name": "measure",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "ph",
+                "label": {
+                  "en": "pH",
+                  "fr": "pH"
+                },
+                "title": {
+                  "en": "pH",
+                  "fr": "pH"
+                }
+              },
+              {
+                "id": "orp",
+                "label": {
+                  "en": "ORP",
+                  "fr": "RedOx"
+                },
+                "title": {
+                  "en": "ORP",
+                  "fr": "RedOx"
+                }
+              },
+              {
+                "id": "salt",
+                "label": {
+                  "en": "Salt",
+                  "fr": "Sel"
+                },
+                "title": {
+                  "en": "Salt",
+                  "fr": "Sel"
+                }
+              },
+              {
+                "id": "water",
+                "label": {
+                  "en": "Water temperature",
+                  "fr": "Température eau"
+                },
+                "title": {
+                  "en": "Water temperature",
+                  "fr": "Température eau"
+                }
+              },
+              {
+                "id": "air",
+                "label": {
+                  "en": "Air temperature",
+                  "fr": "Température air"
+                },
+                "title": {
+                  "en": "Air temperature",
+                  "fr": "Température air"
+                }
+              }
+            ],
+            "title": {
+              "en": "Measure",
+              "fr": "Mesure"
+            }
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Threshold",
+              "fr": "Seuil"
+            }
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "set_pump_mode",
+        "title": {
+          "en": "Set filtration mode",
+          "fr": "Régler le mode de filtration"
+        },
+        "titleFormatted": {
+          "en": "Set filtration mode to [[mode]]",
+          "fr": "Régler le mode de filtration sur [[mode]]"
+        },
+        "highlight": true,
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "label": {
+                  "en": "Auto",
+                  "fr": "Auto"
+                },
+                "title": {
+                  "en": "Auto",
+                  "fr": "Auto"
+                }
+              },
+              {
+                "id": "on",
+                "label": {
+                  "en": "On",
+                  "fr": "Marche"
+                },
+                "title": {
+                  "en": "On",
+                  "fr": "Marche"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "fr": "Arrêt"
+                },
+                "title": {
+                  "en": "Off",
+                  "fr": "Arrêt"
+                }
+              }
+            ],
+            "title": {
+              "en": "Mode",
+              "fr": "Mode"
+            }
+          }
+        ]
+      },
+      {
+        "id": "set_aux",
+        "title": {
+          "en": "Set auxiliary switch",
+          "fr": "Régler un auxiliaire"
+        },
+        "titleFormatted": {
+          "en": "Turn [[aux]] [[state]]",
+          "fr": "Mettre [[aux]] sur [[state]]"
+        },
+        "highlight": true,
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=oklyn"
+          },
+          {
+            "name": "aux",
+            "type": "autocomplete",
+            "title": {
+              "en": "Auxiliary",
+              "fr": "Auxiliaire"
+            },
+            "placeholder": {
+              "en": "Auxiliary",
+              "fr": "Auxiliaire"
+            }
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "label": {
+                  "en": "On",
+                  "fr": "Marche"
+                },
+                "title": {
+                  "en": "On",
+                  "fr": "Marche"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "fr": "Arrêt"
+                },
+                "title": {
+                  "en": "Off",
+                  "fr": "Arrêt"
+                }
+              }
+            ],
+            "title": {
+              "en": "State",
+              "fr": "État"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Oklyn controller",
+        "fr": "Coffret Oklyn"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "measure_temperature.water",
+        "measure_temperature.air",
+        "measure_ph",
+        "measure_orp",
+        "measure_salt",
+        "oklyn_pump_mode",
+        "oklyn_filtration_running",
+        "alarm_generic.ph",
+        "alarm_generic.orp",
+        "alarm_generic.salt"
+      ],
+      "capabilitiesOptions": {
+        "measure_temperature.water": {
+          "title": {
+            "en": "Water temperature",
+            "fr": "Température de l'eau"
+          }
+        },
+        "measure_temperature.air": {
+          "title": {
+            "en": "Air temperature",
+            "fr": "Température de l'air"
+          }
+        },
+        "alarm_generic.ph": {
+          "title": {
+            "en": "pH alert",
+            "fr": "Alerte pH"
+          },
+          "titleTrue": {
+            "en": "pH alert on",
+            "fr": "Alerte pH active"
+          },
+          "titleFalse": {
+            "en": "pH alert off",
+            "fr": "Alerte pH inactive"
+          },
+          "insightsTitleTrue": {
+            "en": "pH alert turned on",
+            "fr": "Alerte pH activée"
+          },
+          "insightsTitleFalse": {
+            "en": "pH alert turned off",
+            "fr": "Alerte pH désactivée"
+          }
+        },
+        "alarm_generic.orp": {
+          "title": {
+            "en": "ORP alert",
+            "fr": "Alerte RedOx"
+          },
+          "titleTrue": {
+            "en": "ORP alert on",
+            "fr": "Alerte RedOx active"
+          },
+          "titleFalse": {
+            "en": "ORP alert off",
+            "fr": "Alerte RedOx inactive"
+          },
+          "insightsTitleTrue": {
+            "en": "ORP alert turned on",
+            "fr": "Alerte RedOx activée"
+          },
+          "insightsTitleFalse": {
+            "en": "ORP alert turned off",
+            "fr": "Alerte RedOx désactivée"
+          }
+        },
+        "alarm_generic.salt": {
+          "title": {
+            "en": "Salt alert",
+            "fr": "Alerte sel"
+          },
+          "titleTrue": {
+            "en": "Salt alert on",
+            "fr": "Alerte sel active"
+          },
+          "titleFalse": {
+            "en": "Salt alert off",
+            "fr": "Alerte sel inactive"
+          },
+          "insightsTitleTrue": {
+            "en": "Salt alert turned on",
+            "fr": "Alerte sel activée"
+          },
+          "insightsTitleFalse": {
+            "en": "Salt alert turned off",
+            "fr": "Alerte sel désactivée"
+          }
+        }
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/oklyn/assets/images/small.png",
+        "large": "/drivers/oklyn/assets/images/large.png",
+        "xlarge": "/drivers/oklyn/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "options": {
+            "singular": true
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "oklyn",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Notifications",
+            "fr": "Notifications"
+          },
+          "children": [
+            {
+              "id": "notify_danger",
+              "type": "checkbox",
+              "label": {
+                "en": "Notify on danger alerts",
+                "fr": "Notifier les alertes danger"
+              },
+              "value": true
+            },
+            {
+              "id": "notify_warning",
+              "type": "checkbox",
+              "label": {
+                "en": "Notify on warning alerts",
+                "fr": "Notifier les alertes warning"
+              },
+              "value": false
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Auxiliary 1",
+            "fr": "Auxiliaire 1"
+          },
+          "children": [
+            {
+              "id": "aux1_mode",
+              "type": "dropdown",
+              "label": {
+                "en": "Mode",
+                "fr": "Mode"
+              },
+              "value": "unused",
+              "values": [
+                {
+                  "id": "switch",
+                  "label": {
+                    "en": "Switch",
+                    "fr": "Interrupteur"
+                  }
+                },
+                {
+                  "id": "regul",
+                  "label": {
+                    "en": "Electrolyzer regulation (read-only)",
+                    "fr": "Régul. électrolyseur (lecture seule)"
+                  }
+                },
+                {
+                  "id": "unused",
+                  "label": {
+                    "en": "Not used",
+                    "fr": "Non utilisé"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "aux1_label",
+              "type": "dropdown",
+              "label": {
+                "en": "Label",
+                "fr": "Libellé"
+              },
+              "value": "electrolyzer",
+              "values": [
+                {
+                  "id": "light",
+                  "label": {
+                    "en": "Light",
+                    "fr": "Lumière"
+                  }
+                },
+                {
+                  "id": "heating",
+                  "label": {
+                    "en": "Heating",
+                    "fr": "Chauffage"
+                  }
+                },
+                {
+                  "id": "electrolyzer",
+                  "label": {
+                    "en": "Electrolyzer",
+                    "fr": "Électrolyseur"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "aux1_custom_label",
+              "type": "text",
+              "label": {
+                "en": "Custom label",
+                "fr": "Libellé personnalisé"
+              },
+              "value": "",
+              "hint": {
+                "en": "Optional. Used for switch and regulation modes.",
+                "fr": "Optionnel. Valable en mode interrupteur et régul. RedOx."
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Auxiliary 2",
+            "fr": "Auxiliaire 2"
+          },
+          "children": [
+            {
+              "id": "aux2_mode",
+              "type": "dropdown",
+              "label": {
+                "en": "Mode",
+                "fr": "Mode"
+              },
+              "value": "unused",
+              "values": [
+                {
+                  "id": "switch",
+                  "label": {
+                    "en": "Switch",
+                    "fr": "Interrupteur"
+                  }
+                },
+                {
+                  "id": "regul",
+                  "label": {
+                    "en": "Electrolyzer regulation (read-only)",
+                    "fr": "Régul. électrolyseur (lecture seule)"
+                  }
+                },
+                {
+                  "id": "unused",
+                  "label": {
+                    "en": "Not used",
+                    "fr": "Non utilisé"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "aux2_label",
+              "type": "dropdown",
+              "label": {
+                "en": "Label",
+                "fr": "Libellé"
+              },
+              "value": "light",
+              "values": [
+                {
+                  "id": "light",
+                  "label": {
+                    "en": "Light",
+                    "fr": "Lumière"
+                  }
+                },
+                {
+                  "id": "heating",
+                  "label": {
+                    "en": "Heating",
+                    "fr": "Chauffage"
+                  }
+                },
+                {
+                  "id": "electrolyzer",
+                  "label": {
+                    "en": "Electrolyzer",
+                    "fr": "Électrolyseur"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "aux2_custom_label",
+              "type": "text",
+              "label": {
+                "en": "Custom label",
+                "fr": "Libellé personnalisé"
+              },
+              "value": "",
+              "hint": {
+                "en": "Optional. Used for switch and regulation modes.",
+                "fr": "Optionnel. Valable en mode interrupteur et régul. RedOx."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "widgets": {
+    "oklyn-dashboard": {
+      "name": {
+        "en": "Oklyn",
+        "fr": "Oklyn"
+      },
+      "height": 280,
+      "transparent": true,
+      "devices": {
+        "type": "app",
+        "singular": true
+      },
+      "settings": [
+        {
+          "id": "transparent",
+          "type": "checkbox",
+          "value": false,
+          "title": {
+            "en": "Transparent background",
+            "fr": "Fond transparent"
+          },
+          "hint": {
+            "en": "Hide the card background and shadow.",
+            "fr": "Masque le fond et l'ombre de la carte."
+          }
+        },
+        {
+          "id": "show_filtration",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show filtration",
+            "fr": "Afficher la filtration"
+          }
+        },
+        {
+          "id": "show_ph",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show pH",
+            "fr": "Afficher le pH"
+          }
+        },
+        {
+          "id": "show_orp",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show ORP",
+            "fr": "Afficher le RedOx"
+          }
+        },
+        {
+          "id": "show_salt",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show salt",
+            "fr": "Afficher le sel"
+          },
+          "hint": {
+            "en": "Hidden automatically if the sensor is absent.",
+            "fr": "Masqué automatiquement si la sonde est absente."
+          }
+        },
+        {
+          "id": "show_water",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show water temperature",
+            "fr": "Afficher la température eau"
+          }
+        },
+        {
+          "id": "show_air",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show air temperature",
+            "fr": "Afficher la température air"
+          }
+        },
+        {
+          "id": "show_aux",
+          "type": "checkbox",
+          "value": true,
+          "title": {
+            "en": "Show auxiliaries",
+            "fr": "Afficher les auxiliaires"
+          },
+          "hint": {
+            "en": "Only for Aux configured on the device.",
+            "fr": "Uniquement pour les Aux configurés sur l'appareil."
+          }
+        }
+      ],
+      "api": {
+        "getStatus": {
+          "method": "GET",
+          "path": "/"
+        },
+        "setPumpMode": {
+          "method": "PUT",
+          "path": "/pump"
+        },
+        "setAux": {
+          "method": "PUT",
+          "path": "/aux"
+        }
+      },
+      "id": "oklyn-dashboard"
+    }
+  },
+  "capabilities": {
+    "measure_orp": {
+      "type": "number",
+      "title": {
+        "en": "ORP",
+        "fr": "RedOx"
+      },
+      "units": {
+        "en": "mV",
+        "fr": "mV"
+      },
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/measure_orp.svg"
+    },
+    "measure_ph": {
+      "type": "number",
+      "title": {
+        "en": "pH",
+        "fr": "pH"
+      },
+      "units": {
+        "en": "pH",
+        "fr": "pH"
+      },
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "pH",
+        "fr": "pH"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/measure_ph.svg"
+    },
+    "measure_salt": {
+      "type": "number",
+      "title": {
+        "en": "Salt",
+        "fr": "Sel"
+      },
+      "units": {
+        "en": "g/L",
+        "fr": "g/L"
+      },
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/measure_salt.svg"
+    },
+    "oklyn_aux_contact": {
+      "type": "boolean",
+      "title": {
+        "en": "Auxiliary contact",
+        "fr": "Contact auxiliaire"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "titleTrue": {
+        "en": "On",
+        "fr": "Marche"
+      },
+      "titleFalse": {
+        "en": "Off",
+        "fr": "Arrêt"
+      },
+      "insightsTitleTrue": {
+        "en": "Auxiliary turned on",
+        "fr": "Auxiliaire activé"
+      },
+      "insightsTitleFalse": {
+        "en": "Auxiliary turned off",
+        "fr": "Auxiliaire désactivé"
+      },
+      "icon": "/assets/capabilities/oklyn_aux_contact.svg"
+    },
+    "oklyn_filtration_running": {
+      "type": "boolean",
+      "title": {
+        "en": "Filtration running",
+        "fr": "Filtration en marche"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Filtration started",
+        "fr": "Filtration démarrée"
+      },
+      "insightsTitleFalse": {
+        "en": "Filtration stopped",
+        "fr": "Filtration arrêtée"
+      },
+      "icon": "/assets/capabilities/oklyn_filtration_running.svg"
+    },
+    "oklyn_pump_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Filtration mode",
+        "fr": "Mode filtration"
+      },
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Auto",
+            "fr": "Auto"
+          }
+        },
+        {
+          "id": "on",
+          "title": {
+            "en": "On",
+            "fr": "Marche"
+          }
+        },
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "fr": "Arrêt"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/capabilities/oklyn_pump_mode.svg"
+    }
   }
 }

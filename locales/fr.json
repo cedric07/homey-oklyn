@@ -1,0 +1,70 @@
+{
+  "pair": {
+    "error_configure_settings": "Configurez d'abord votre clé API Oklyn : Homey → Apps → Oklyn → Configurer.",
+    "error_no_devices": "Aucun coffret Oklyn n'a été trouvé sur ce compte."
+  },
+  "errors": {
+    "missing_token": "Clé API Oklyn manquante. Ouvrez Apps → Oklyn → Configurer pour l'ajouter.",
+    "aux_not_switchable": "Ce contact auxiliaire n'est pas configuré en interrupteur (la régul. est en lecture seule)."
+  },
+  "measures": {
+    "air": "Température air",
+    "water": "Température eau",
+    "ph": "pH",
+    "orp": "RedOx",
+    "salt": "Sel"
+  },
+  "status": {
+    "normal": "normal",
+    "warning": "avertissement",
+    "danger": "danger"
+  },
+  "notifications": {
+    "measure_alert": "__device__ : __measure__ est en __status__ (__value__)"
+  },
+  "settings": {
+    "title": "Réglages Oklyn",
+    "subtitle": "Créez une clé API dans l'application Oklyn : Mon Compte → Clef API.",
+    "api_section": "Accès API",
+    "api_token_label": "Clé API",
+    "poll_section": "Rafraîchissement",
+    "poll_interval_label": "Intervalle",
+    "poll_interval_5": "5 minutes",
+    "poll_interval_10": "10 minutes",
+    "poll_interval_15": "15 minutes",
+    "save": "Enregistrer",
+    "saved": "Réglages enregistrés.",
+    "api_token_required": "Veuillez saisir votre clé API Oklyn.",
+    "aux_label_light": "Lumière",
+    "aux_label_heating": "Chauffage",
+    "aux_label_electrolyzer": "Électrolyseur",
+    "aux_label_regul": "Régul. RedOx",
+    "aux_regul_title": "__name__ (lecture seule)"
+  },
+  "widget": {
+    "loading": "Chargement…",
+    "unavailable": "Indisponible",
+    "no_device": "Sélectionnez un appareil Oklyn dans les réglages du widget.",
+    "water": "Eau",
+    "air": "Air",
+    "ph": "pH",
+    "orp": "RedOx",
+    "salt": "Sel",
+    "filtration": "Filtration",
+    "mode": "Mode",
+    "running": "En marche",
+    "stopped": "À l'arrêt",
+    "auto": "Auto",
+    "on": "Marche",
+    "off": "Arrêt",
+    "pump_auto": "Auto",
+    "pump_on": "Marche",
+    "pump_off": "Arrêt",
+    "aux": "Aux",
+    "auxiliaries": "Auxiliaires",
+    "status_ok": "OK",
+    "status_warning": "Attention",
+    "status_danger": "Danger",
+    "last_sync": "Dernière synchro"
+  }
+}

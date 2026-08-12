@@ -1,5 +1,6 @@
 {
   "1.0.0": {
-    "en": "First version!"
+    "en": "Initial release: Oklyn pool monitoring & control, Flow cards and dashboard widget.",
+    "fr": "Première version : surveillance et pilotage Oklyn, cartes Flow et widget tableau de bord."
   }
 }

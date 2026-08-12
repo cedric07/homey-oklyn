@@ -1,1 +1,70 @@
-{}
+{
+  "pair": {
+    "error_configure_settings": "Configure your Oklyn API key first: Homey → Apps → Oklyn → Configure.",
+    "error_no_devices": "No Oklyn controller was found on this account."
+  },
+  "errors": {
+    "missing_token": "Missing Oklyn API key. Open Apps → Oklyn → Configure to add it.",
+    "aux_not_switchable": "This auxiliary contact is not configured as a switch (regulation mode is read-only)."
+  },
+  "measures": {
+    "air": "Air temperature",
+    "water": "Water temperature",
+    "ph": "pH",
+    "orp": "ORP",
+    "salt": "Salt"
+  },
+  "status": {
+    "normal": "normal",
+    "warning": "warning",
+    "danger": "danger"
+  },
+  "notifications": {
+    "measure_alert": "__device__: __measure__ is __status__ (__value__)"
+  },
+  "settings": {
+    "title": "Oklyn settings",
+    "subtitle": "Create an API key in the Oklyn app: My Account → API Key.",
+    "api_section": "API access",
+    "api_token_label": "API key",
+    "poll_section": "Refresh",
+    "poll_interval_label": "Interval",
+    "poll_interval_5": "5 minutes",
+    "poll_interval_10": "10 minutes",
+    "poll_interval_15": "15 minutes",
+    "save": "Save",
+    "saved": "Settings saved.",
+    "api_token_required": "Please enter your Oklyn API key.",
+    "aux_label_light": "Light",
+    "aux_label_heating": "Heating",
+    "aux_label_electrolyzer": "Electrolyzer",
+    "aux_label_regul": "ORP regulation",
+    "aux_regul_title": "__name__ (read-only)"
+  },
+  "widget": {
+    "loading": "Loading…",
+    "unavailable": "Unavailable",
+    "no_device": "Select an Oklyn device in the widget settings.",
+    "water": "Water",
+    "air": "Air",
+    "ph": "pH",
+    "orp": "ORP",
+    "salt": "Salt",
+    "filtration": "Filtration",
+    "mode": "Mode",
+    "running": "Running",
+    "stopped": "Stopped",
+    "auto": "Auto",
+    "on": "On",
+    "off": "Off",
+    "pump_auto": "Auto",
+    "pump_on": "On",
+    "pump_off": "Off",
+    "aux": "Aux",
+    "auxiliaries": "Auxiliaries",
+    "status_ok": "OK",
+    "status_warning": "Warning",
+    "status_danger": "Danger",
+    "last_sync": "Last sync"
+  }
+}
