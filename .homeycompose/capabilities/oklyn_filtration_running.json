@@ -1,0 +1,20 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Filtration running",
+    "fr": "Filtration en marche"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "insights": true,
+  "insightsTitleTrue": {
+    "en": "Filtration started",
+    "fr": "Filtration démarrée"
+  },
+  "insightsTitleFalse": {
+    "en": "Filtration stopped",
+    "fr": "Filtration arrêtée"
+  },
+  "icon": "/assets/capabilities/oklyn_filtration_running.svg"
+}

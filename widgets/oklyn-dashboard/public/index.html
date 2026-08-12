@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--homey-text-color);
+      background: transparent;
+    }
+
+    /* Default: recreate Homey card (compose must be transparent:true for the toggle to work) */
+    body.is-solid {
+      background: var(--homey-background-color);
+      border-radius: var(--homey-border-radius-default);
+      padding: var(--homey-su-4);
+      box-shadow:
+        0 1px 2px color-mix(in srgb, #000 6%, transparent),
+        0 4px 14px color-mix(in srgb, #000 10%, transparent);
+    }
+
+    .homey-dark-mode body.is-solid,
+    body.is-solid.homey-dark-mode {
+      box-shadow:
+        0 1px 2px color-mix(in srgb, #000 35%, transparent),
+        0 6px 18px color-mix(in srgb, #000 40%, transparent);
+    }
+
+    body.is-transparent {
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+      border-radius: 0;
+    }
+
+    .wrap {
+      display: flex;
+      flex-direction: column;
+      gap: var(--homey-su-3);
+    }
+
+    .message {
+      color: var(--homey-text-color-light);
+      font-size: var(--homey-font-size-small);
+      line-height: var(--homey-line-height-small);
+    }
+
+    /* Shared control-card surface (filtration + aux) */
+    .hero,
+    .aux-panel {
+      position: relative;
+      overflow: hidden;
+      border: var(--homey-line-light);
+      border-radius: var(--homey-border-radius-default);
+      padding: var(--homey-su-3);
+      background:
+        linear-gradient(145deg,
+          color-mix(in srgb, var(--homey-color-blue) 16%, var(--homey-background-color)),
+          var(--homey-background-color) 70%);
+    }
+
+    /* —— Filtration —— */
+    .hero.is-running {
+      border-color: color-mix(in srgb, var(--homey-color-blue) 45%, transparent);
+    }
+
+    .hero-top {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--homey-su-2);
+      margin-bottom: var(--homey-su-3);
+    }
+
+    .hero-kicker {
+      margin: 0;
+      font-size: var(--homey-font-size-small);
+      line-height: var(--homey-line-height-small);
+      font-weight: var(--homey-font-weight-regular);
+      color: var(--homey-text-color-light);
+    }
+
+    .hero-name {
+      margin: 0;
+      font-size: var(--homey-font-size-default);
+      line-height: var(--homey-line-height-default);
+      font-weight: var(--homey-font-weight-bold);
+    }
+
+    .pill {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: var(--homey-font-size-small);
+      line-height: var(--homey-line-height-small);
+      font-weight: var(--homey-font-weight-medium);
+      background: color-mix(in srgb, var(--homey-text-color) 6%, transparent);
+      color: var(--homey-text-color-light);
+    }
+
+    .pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--homey-text-color-light);
+    }
+
+    .pill.on {
+      background: color-mix(in srgb, var(--homey-color-blue) 18%, transparent);
+      color: var(--homey-text-color-blue);
+    }
+
+    .pill.on .dot {
+      background: var(--homey-color-blue);
+      animation: pulse 1.8s ease-out infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--homey-color-blue) 45%, transparent);
+      }
+
+      70% {
+        box-shadow: 0 0 0 8px transparent;
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 transparent;
+      }
+    }
+
+    .segment {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--homey-su-1);
+      padding: var(--homey-su-1);
+      border-radius: var(--homey-border-radius-default);
+      background: color-mix(in srgb, var(--homey-text-color) 6%, transparent);
+    }
+
+    .segment button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--homey-text-color);
+      font: inherit;
+      font-size: 12px;
+      line-height: 15px;
+      font-weight: var(--homey-font-weight-medium);
+      padding: var(--homey-su-2) 4px;
+      border-radius: var(--homey-border-radius-small);
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .segment button.active {
+      background: var(--homey-color-blue);
+      color: var(--homey-text-color-white);
+    }
+
+    .segment button:disabled {
+      opacity: 0.45;
+    }
+
+    /* —— Metric tiles —— */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--homey-su-2);
+    }
+
+    .metrics.cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metrics.cols-1 {
+      grid-template-columns: 1fr;
+    }
+
+    .metrics.cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metrics.cols-5 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .tile {
+      --tile-accent: var(--homey-color-blue);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--homey-su-2);
+      min-height: 104px;
+      padding: var(--homey-su-3);
+      border: 1px solid color-mix(in srgb, var(--tile-accent) 22%, transparent);
+      border-radius: var(--homey-border-radius-default);
+      background:
+        radial-gradient(120% 90% at 100% 0%,
+          color-mix(in srgb, var(--tile-accent) 22%, transparent),
+          transparent 55%),
+        linear-gradient(160deg,
+          color-mix(in srgb, var(--tile-accent) 12%, var(--homey-background-color)),
+          var(--homey-background-color) 72%);
+      overflow: hidden;
+    }
+
+    .tile-header {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .tile-icon {
+      flex-shrink: 0;
+      width: var(--homey-icon-size-medium, 20px);
+      height: var(--homey-icon-size-medium, 20px);
+      background-color: var(--homey-icon-color-dark, var(--homey-text-color));
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+    }
+
+    .homey-custom-icon-measure_ph {
+      -webkit-mask-image: url('icons/measure_ph.svg');
+      mask-image: url('icons/measure_ph.svg');
+    }
+
+    .homey-custom-icon-measure_orp {
+      -webkit-mask-image: url('icons/measure_orp.svg');
+      mask-image: url('icons/measure_orp.svg');
+    }
+
+    .homey-custom-icon-measure_salt {
+      -webkit-mask-image: url('icons/measure_salt.svg');
+      mask-image: url('icons/measure_salt.svg');
+    }
+
+    .homey-custom-icon-measure_temperature_water {
+      -webkit-mask-image: url('icons/measure_temperature_water.svg');
+      mask-image: url('icons/measure_temperature_water.svg');
+    }
+
+    .homey-custom-icon-measure_temperature_air {
+      -webkit-mask-image: url('icons/measure_temperature_air.svg');
+      mask-image: url('icons/measure_temperature_air.svg');
+    }
+
+    .tile-label {
+      margin: 0;
+      min-width: 0;
+      font-size: var(--homey-font-size-small);
+      line-height: var(--homey-line-height-small);
+      font-weight: var(--homey-font-weight-medium);
+      color: var(--homey-text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tile-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .tile-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .tile-value {
+      font-size: var(--homey-font-size-large);
+      line-height: var(--homey-line-height-large);
+      font-weight: var(--homey-font-weight-bold);
+      font-variant-numeric: tabular-nums;
+      color: var(--homey-text-color);
+    }
+
+    .tile-unit {
+      font-size: var(--homey-font-size-small);
+      line-height: var(--homey-line-height-small);
+      font-weight: var(--homey-font-weight-medium);
+      color: var(--homey-text-color);
+      transform: translateY(-2px);
+    }
+
+    .tile-badge {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      line-height: 16px;
+      font-weight: var(--homey-font-weight-medium);
+      background: color-mix(in srgb, var(--homey-text-color) 6%, transparent);
+      color: var(--homey-text-color-light);
+    }
+
+    .tile-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--homey-color-success);
+    }
+
+    .tile.tone-ph {
+      --tile-accent: #3b82f6;
+    }
+
+    .tile.tone-orp {
+      --tile-accent: #22c55e;
+    }
+
+    .tile.tone-salt {
+      --tile-accent: #f59e0b;
+    }
+
+    .tile.tone-water {
+      --tile-accent: #06b6d4;
+    }
+
+    .tile.tone-air {
+      --tile-accent: #64748b;
+    }
+
+    .tile.status-ok .tile-badge {
+      background: color-mix(in srgb, var(--homey-color-success) 14%, transparent);
+      color: var(--homey-text-color-success);
+    }
+
+    .tile.status-warning {
+      border-color: color-mix(in srgb, var(--homey-color-warning) 50%, transparent);
+      background:
+        radial-gradient(120% 90% at 100% 0%,
+          color-mix(in srgb, var(--homey-color-warning) 20%, transparent),
+          transparent 55%),
+        linear-gradient(160deg,
+          color-mix(in srgb, var(--homey-color-warning) 12%, var(--homey-background-color)),
+          var(--homey-background-color) 72%);
+    }
+
+    .tile.status-warning .tile-badge {
+      background: color-mix(in srgb, var(--homey-color-warning) 16%, transparent);
+      color: var(--homey-text-color-warning);
+    }
+
+    .tile.status-warning .tile-badge .dot {
+      background: var(--homey-color-warning);
+    }
+
+    .tile.status-danger {
+      border-color: color-mix(in srgb, var(--homey-color-danger) 55%, transparent);
+      background:
+        radial-gradient(120% 90% at 100% 0%,
+          color-mix(in srgb, var(--homey-color-danger) 22%, transparent),
+          transparent 55%),
+        linear-gradient(160deg,
+          color-mix(in srgb, var(--homey-color-danger) 12%, var(--homey-background-color)),
+          var(--homey-background-color) 72%);
+    }
+
+    .tile.status-danger .tile-badge {
+      background: color-mix(in srgb, var(--homey-color-danger) 16%, transparent);
+      color: var(--homey-text-color-danger);
+    }
+
+    .tile.status-danger .tile-badge .dot {
+      background: var(--homey-color-danger);
+      animation: pulse 1.6s ease-out infinite;
+    }
+
+    /* —— Aux —— */
+    .aux-panel.has-active {
+      border-color: color-mix(in srgb, var(--homey-color-blue) 45%, transparent);
+    }
+
+    .aux-kicker {
+      margin: 0 0 var(--homey-su-2);
+      font-size: var(--homey-font-size-small);
+      line-height: var(--homey-line-height-small);
+      font-weight: var(--homey-font-weight-regular);
+      color: var(--homey-text-color-light);
+    }
+
+    .aux-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--homey-su-1);
+    }
+
+    .aux-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--homey-su-3);
+      padding: var(--homey-su-2) var(--homey-su-3);
+      min-height: 48px;
+      border-radius: var(--homey-border-radius-default);
+      background: color-mix(in srgb, var(--homey-text-color) 6%, transparent);
+    }
+
+    .aux-meta {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .aux-name {
+      margin: 0;
+      font-size: var(--homey-font-size-default);
+      line-height: var(--homey-line-height-default);
+      font-weight: var(--homey-font-weight-bold);
+      color: var(--homey-text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .aux-toggle {
+      appearance: none;
+      position: relative;
+      flex-shrink: 0;
+      width: 46px;
+      height: 28px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--homey-text-color) 18%, transparent);
+      cursor: pointer;
+      transition: background 0.18s ease;
+    }
+
+    .aux-toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--homey-text-color-white, #fff);
+      box-shadow: 0 1px 3px color-mix(in srgb, #000 22%, transparent);
+      transition: transform 0.18s ease;
+    }
+
+    .aux-toggle.on {
+      background: var(--homey-color-blue);
+    }
+
+    .aux-toggle.on::after {
+      transform: translateX(18px);
+    }
+
+    .aux-toggle:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .sync {
+      margin: 0;
+      text-align: center;
+      font-size: 11px;
+      line-height: 14px;
+      color: var(--homey-text-color-light);
+    }
+
+    @media (max-width: 380px) {
+      .tile {
+        min-height: 92px;
+        padding: var(--homey-su-2) var(--homey-su-3);
+      }
+
+      .metrics.cols-5,
+      .metrics:not(.cols-1):not(.cols-2) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body class="homey-widget-full is-solid">
+  <div id="root" class="message"></div>
+
+  <script type="text/javascript">
+    let HomeyRef = null;
+    let deviceId = null;
+    let state = null;
+    let busy = false;
+    let lastHeight = null;
+
+    function t(key) {
+      return HomeyRef.__('widget.' + key);
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function widgetSettings() {
+      try {
+        return HomeyRef.getSettings() || {};
+      } catch (err) {
+        return {};
+      }
+    }
+
+    function settingOn(key, defaultValue) {
+      const value = widgetSettings()[key];
+      if (value === undefined || value === null) return defaultValue !== false;
+      return value !== false;
+    }
+
+    function showFiltration() {
+      return settingOn('show_filtration', true);
+    }
+
+    function showMetric(key) {
+      return settingOn('show_' + key, true);
+    }
+
+    function showAux() {
+      return settingOn('show_aux', true);
+    }
+
+    function isTransparent() {
+      return settingOn('transparent', false);
+    }
+
+    function applyChrome() {
+      const transparent = isTransparent();
+      document.body.classList.toggle('is-transparent', transparent);
+      document.body.classList.toggle('is-solid', !transparent);
+    }
+
+    function formatValue(value, digits) {
+      if (typeof value !== 'number' || Number.isNaN(value)) return '—';
+      return Number(value).toFixed(digits);
+    }
+
+    function hasValue(value) {
+      return typeof value === 'number' && !Number.isNaN(value);
+    }
+
+    function hasStatus(status) {
+      return status === 'normal' || status === 'warning' || status === 'danger';
+    }
+
+    function formatSyncAt(iso) {
+      if (!iso) return '';
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) return '';
+      let lang;
+      try {
+        lang = HomeyRef.getLanguage ? HomeyRef.getLanguage() : undefined;
+      } catch (err) {
+        lang = undefined;
+      }
+      return date.toLocaleString(lang || undefined, {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
+    function syncFooterHtml() {
+      const formatted = formatSyncAt(state && state.lastSyncAt);
+      if (!formatted) return '';
+      return '<p class="sync">' + t('last_sync') + ' · ' + formatted + '</p>';
+    }
+
+    function statusLabel(status) {
+      if (status === 'warning') return t('status_warning');
+      if (status === 'danger') return t('status_danger');
+      if (status === 'normal') return t('status_ok');
+      return '';
+    }
+
+    function statusClass(status) {
+      if (status === 'warning') return 'status-warning';
+      if (status === 'danger') return 'status-danger';
+      if (status === 'normal') return 'status-ok';
+      return '';
+    }
+
+    function metricTile(tone, icon, label, value, unit, status, digits) {
+      if (!hasValue(value)) return '';
+      const badge = hasStatus(status)
+        ? '<span class="tile-badge"><span class="dot"></span>' + statusLabel(status) + '</span>'
+        : '';
+      return (
+        '<div class="tile tone-' + tone + (statusClass(status) ? ' ' + statusClass(status) : '') + '">' +
+        '<div class="tile-header">' +
+        '<span class="tile-icon homey-custom-icon-' + icon + '" aria-hidden="true"></span>' +
+        '<p class="tile-label homey-text-small">' + label + '</p>' +
+        '</div>' +
+        '<div class="tile-body">' +
+        '<div class="tile-value-row">' +
+        '<span class="tile-value">' + formatValue(value, digits) + '</span>' +
+        (unit ? '<span class="tile-unit">' + unit + '</span>' : '') +
+        '</div>' +
+        badge +
+        '</div>' +
+        '</div>'
+      );
+    }
+
+    function measureContentHeight() {
+      const root = document.getElementById('root');
+      const wrap = root && root.querySelector('.wrap');
+      const content = wrap || root;
+      if (!content) return 160;
+
+      let height = wrap
+        ? wrap.getBoundingClientRect().height
+        : root.scrollHeight;
+
+      if (document.body.classList.contains('is-solid')) {
+        const styles = window.getComputedStyle(document.body);
+        height += (parseFloat(styles.paddingTop) || 0) + (parseFloat(styles.paddingBottom) || 0);
+      }
+
+      return Math.ceil(height);
+    }
+
+    async function syncHeight() {
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const px = Math.max(120, Math.min(900, measureContentHeight()));
+      if (lastHeight === px) return;
+      lastHeight = px;
+      try {
+        if (HomeyRef.setHeight) await HomeyRef.setHeight(px);
+      } catch (err) { /* ignore */ }
+    }
+
+    function render() {
+      applyChrome();
+      const root = document.getElementById('root');
+
+      if (!deviceId) {
+        root.className = 'message';
+        root.textContent = t('no_device');
+        syncHeight();
+        return;
+      }
+      if (!state) {
+        root.className = 'message';
+        root.textContent = t('loading');
+        syncHeight();
+        return;
+      }
+      if (state.error === 'no_device') {
+        root.className = 'message';
+        root.textContent = t('no_device');
+        syncHeight();
+        return;
+      }
+
+      const c = state.capabilities || {};
+      const s = state.statuses || {};
+      const p = state.presence || {};
+      const settings = state.settings || {};
+      const running = c.oklyn_filtration_running === true;
+      const mode = c.oklyn_pump_mode || 'auto';
+      const name = escapeHtml(state.name || 'Oklyn');
+
+      const tiles = [];
+      if (showMetric('ph') && p.ph !== false) {
+        tiles.push(metricTile('ph', 'measure_ph', t('ph'), c.measure_ph, '', s.ph, 2));
+      }
+      if (showMetric('orp') && p.orp !== false) {
+        tiles.push(metricTile('orp', 'measure_orp', t('orp'), c.measure_orp, 'mV', s.orp, 0));
+      }
+      if (showMetric('salt') && p.salt) {
+        tiles.push(metricTile('salt', 'measure_salt', t('salt'), c.measure_salt, 'g/L', s.salt, 2));
+      }
+      if (showMetric('water') && p.water !== false) {
+        tiles.push(metricTile('water', 'measure_temperature_water', t('water'), c['measure_temperature.water'], '°C', null, 1));
+      }
+      if (showMetric('air') && p.air !== false) {
+        tiles.push(metricTile('air', 'measure_temperature_air', t('air'), c['measure_temperature.air'], '°C', null, 1));
+      }
+      const tileHtml = tiles.filter(Boolean);
+      const colsClass = tileHtml.length <= 3
+        ? (tileHtml.length === 3 ? '' : 'cols-' + Math.max(1, tileHtml.length))
+        : ('cols-' + tileHtml.length);
+
+      let auxHtml = '';
+      if (showAux()) {
+        const rows = [];
+        let anyActive = false;
+        ['aux1', 'aux2'].forEach((aux) => {
+          const modeAux = settings[aux + '_mode'];
+          if (!modeAux || modeAux === 'unused') return;
+          const title = escapeHtml(settings[aux + '_title'] || (t('aux') + ' ' + aux.slice(-1)));
+          if (modeAux === 'switch') {
+            const on = c['onoff.' + aux] === true;
+            if (on) anyActive = true;
+            rows.push(
+              '<div class="aux-item">' +
+              '<div class="aux-meta"><p class="aux-name">' + title + '</p></div>' +
+              '<button type="button" class="aux-toggle ' + (on ? 'on' : '') + '"' +
+              ' role="switch" aria-checked="' + (on ? 'true' : 'false') + '"' +
+              ' aria-label="' + title + '"' +
+              ' data-aux="' + aux + '" data-on="' + (on ? '0' : '1') + '"' +
+              (busy ? ' disabled' : '') + '></button>' +
+              '</div>'
+            );
+          } else if (modeAux === 'regul') {
+            const on = c['oklyn_aux_contact.' + aux] === true;
+            if (on) anyActive = true;
+            rows.push(
+              '<div class="aux-item">' +
+              '<div class="aux-meta"><p class="aux-name">' + title + '</p></div>' +
+              '<span class="pill ' + (on ? 'on' : '') + '">' +
+              '<span class="dot"></span>' + (on ? t('running') : t('stopped')) +
+              '</span>' +
+              '</div>'
+            );
+          }
+        });
+        if (rows.length) {
+          auxHtml =
+            '<div class="aux-panel' + (anyActive ? ' has-active' : '') + '">' +
+            '<p class="aux-kicker">' + t('auxiliaries') + '</p>' +
+            '<div class="aux-list">' + rows.join('') + '</div>' +
+            '</div>';
+        }
+      }
+
+      const modeButtons = ['auto', 'on', 'off'].map((id) => (
+        '<button type="button" class="' + (mode === id ? 'active' : '') + '" data-mode="' + id + '"' +
+        (busy ? ' disabled' : '') + '>' + t('pump_' + id) + '</button>'
+      )).join('');
+
+      const heroHtml = showFiltration()
+        ? (
+          '<div class="hero ' + (running ? 'is-running' : '') + '">' +
+          '<div class="hero-top">' +
+          '<div>' +
+          '<p class="hero-kicker">' + t('filtration') + '</p>' +
+          '<p class="hero-name">' + name + '</p>' +
+          '</div>' +
+          '<span class="pill ' + (running ? 'on' : '') + '"><span class="dot"></span>' +
+          (running ? t('running') : t('stopped')) +
+          '</span>' +
+          '</div>' +
+          '<div class="segment">' + modeButtons + '</div>' +
+          '</div>'
+        )
+        : '';
+
+      root.className = '';
+      root.innerHTML =
+        '<div class="wrap">' +
+        heroHtml +
+        auxHtml +
+        (tileHtml.length ? '<div class="metrics ' + colsClass + '">' + tileHtml.join('') + '</div>' : '') +
+        syncFooterHtml() +
+        '</div>';
+
+      root.querySelectorAll('.segment button').forEach((button) => {
+        button.addEventListener('click', async () => {
+          if (busy || !state || !state.capabilities) return;
+          const nextMode = button.getAttribute('data-mode');
+          if (!nextMode || state.capabilities.oklyn_pump_mode === nextMode) return;
+
+          HomeyRef.hapticFeedback();
+          busy = true;
+
+          // Optimistic UI — don't wait for a second tap / delayed poll.
+          state.capabilities.oklyn_pump_mode = nextMode;
+          if (nextMode === 'on') state.capabilities.oklyn_filtration_running = true;
+          if (nextMode === 'off') state.capabilities.oklyn_filtration_running = false;
+          render();
+
+          try {
+            const updated = await HomeyRef.api('PUT', '/pump?deviceId=' + encodeURIComponent(deviceId), {
+              mode: nextMode,
+            });
+            if (updated && !updated.error) {
+              state = updated;
+            }
+          } catch (err) {
+            console.error(err);
+            await refresh().catch(console.error);
+          } finally {
+            busy = false;
+            render();
+          }
+        });
+      });
+
+      root.querySelectorAll('button.aux-toggle').forEach((button) => {
+        button.addEventListener('click', async () => {
+          if (busy || !state || !state.capabilities) return;
+          const aux = button.getAttribute('data-aux');
+          const on = button.getAttribute('data-on') === '1';
+          HomeyRef.hapticFeedback();
+          busy = true;
+
+          state.capabilities['onoff.' + aux] = on;
+          render();
+
+          try {
+            const updated = await HomeyRef.api('PUT', '/aux?deviceId=' + encodeURIComponent(deviceId), {
+              aux: aux,
+              on: on,
+            });
+            if (updated && !updated.error) {
+              state = updated;
+            }
+          } catch (err) {
+            console.error(err);
+            await refresh().catch(console.error);
+          } finally {
+            busy = false;
+            render();
+          }
+        });
+      });
+
+      syncHeight();
+    }
+
+    async function refresh() {
+      if (!deviceId) {
+        state = null;
+        render();
+        return;
+      }
+      state = await HomeyRef.api('GET', '/?deviceId=' + encodeURIComponent(deviceId));
+      render();
+    }
+
+    function onHomeyReady(Homey) {
+      HomeyRef = Homey;
+      const ids = Homey.getDeviceIds ? Homey.getDeviceIds() : [];
+      deviceId = ids && ids.length ? ids[0] : null;
+
+      applyChrome();
+      Homey.ready({ height: 280 });
+      lastHeight = 280;
+
+      refresh().catch((err) => {
+        console.error(err);
+        document.getElementById('root').textContent = t('unavailable');
+      });
+
+      window.addEventListener('resize', () => {
+        lastHeight = null;
+        syncHeight();
+      });
+
+      setInterval(() => refresh().catch(console.error), 60000);
+    }
+  </script>
+</body>
+
+</html>

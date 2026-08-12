@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+</head>
+
+<body>
+  <header class="homey-header">
+    <h1 class="homey-title" data-i18n="settings.title"></h1>
+    <p class="homey-subtitle" data-i18n="settings.subtitle"></p>
+  </header>
+
+  <fieldset class="homey-form-fieldset">
+    <legend class="homey-form-legend" data-i18n="settings.api_section"></legend>
+
+    <div class="homey-form-group">
+      <label class="homey-form-label" for="apiToken" data-i18n="settings.api_token_label"></label>
+      <input class="homey-form-input" id="apiToken" type="password" autocomplete="off" autocapitalize="off"
+        autocorrect="off" spellcheck="false" value="" />
+    </div>
+  </fieldset>
+
+  <fieldset class="homey-form-fieldset">
+    <legend class="homey-form-legend" data-i18n="settings.poll_section"></legend>
+
+    <div class="homey-form-group">
+      <label class="homey-form-label" for="pollInterval" data-i18n="settings.poll_interval_label"></label>
+      <select class="homey-form-select" id="pollInterval" name="pollInterval">
+        <option value="5" data-i18n="settings.poll_interval_5"></option>
+        <option value="10" data-i18n="settings.poll_interval_10"></option>
+        <option value="15" data-i18n="settings.poll_interval_15"></option>
+      </select>
+    </div>
+  </fieldset>
+
+  <button type="button" id="save" class="homey-button-primary-full" data-i18n="settings.save"></button>
+
+  <script type="text/javascript">
+    function onHomeyReady(Homey) {
+      Homey.ready();
+
+      var tokenInput = document.getElementById('apiToken');
+      var pollSelect = document.getElementById('pollInterval');
+      var saveButton = document.getElementById('save');
+
+      Homey.get('apiToken', function (err, apiToken) {
+        if (err) {
+          Homey.alert(err);
+          return;
+        }
+        if (apiToken) {
+          tokenInput.value = apiToken;
+        }
+      });
+
+      Homey.get('pollInterval', function (err, pollInterval) {
+        if (err) {
+          Homey.alert(err);
+          return;
+        }
+        var value = String(pollInterval || '5');
+        if (value === '2') value = '5';
+        if (['5', '10', '15'].indexOf(value) === -1) value = '5';
+        pollSelect.value = value;
+      });
+
+      saveButton.addEventListener('click', function () {
+        var token = (tokenInput.value || '').trim();
+        var pollInterval = Number(pollSelect.value) || 5;
+
+        if (!token) {
+          Homey.alert(Homey.__('settings.api_token_required'));
+          return;
+        }
+
+        saveButton.classList.add('is-loading');
+        saveButton.disabled = true;
+
+        Homey.set('apiToken', token, function (errToken) {
+          if (errToken) {
+            saveButton.classList.remove('is-loading');
+            saveButton.disabled = false;
+            Homey.alert(errToken);
+            return;
+          }
+
+          Homey.set('pollInterval', pollInterval, function (errPoll) {
+            saveButton.classList.remove('is-loading');
+            saveButton.disabled = false;
+
+            if (errPoll) {
+              Homey.alert(errPoll);
+              return;
+            }
+
+            Homey.alert(Homey.__('settings.saved'));
+          });
+        });
+      });
+    }
+  </script>
+</body>
+
+</html>

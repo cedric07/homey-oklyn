@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Salt",
+    "fr": "Sel"
+  },
+  "units": {
+    "en": "g/L",
+    "fr": "g/L"
+  },
+  "decimals": 2,
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "uiComponent": "sensor",
+  "icon": "/assets/capabilities/measure_salt.svg"
+}

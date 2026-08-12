@@ -8,22 +8,55 @@
     "local"
   ],
   "name": {
-    "en": "Oklyn pool"
+    "en": "Oklyn",
+    "fr": "Oklyn"
   },
   "description": {
-    "en": "Adds support for MyBrand devices."
+    "en": "Integrate Oklyn pool controllers with Homey",
+    "fr": "Intègre les coffrets Oklyn dans Homey"
   },
   "category": [
-    "appliances"
+    "climate"
   ],
+  "brandColor": "#0A0A0A",
   "permissions": [],
   "images": {
-    "small": "/assets/images/small.png",
-    "large": "/assets/images/large.png",
-    "xlarge": "/assets/images/xlarge.png"
+    "small": "/assets/images/small.jpg",
+    "large": "/assets/images/large.jpg",
+    "xlarge": "/assets/images/xlarge.jpg"
   },
   "author": {
-    "name": "Cédric Andrietti",
-    "email": "cedric.andrietti@gmail.com"
+    "name": "Cédric Andrietti"
+  },
+  "support": "https://github.com/cedric07/homey-oklyn/issues",
+  "source": "https://github.com/cedric07/homey-oklyn",
+  "bugs": {
+    "url": "https://github.com/cedric07/homey-oklyn/issues"
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "CedricAndrietti"
+      }
+    }
+  },
+  "tags": {
+    "en": [
+      "pool",
+      "oklyn",
+      "filtration",
+      "pH",
+      "ORP",
+      "swimming pool"
+    ],
+    "fr": [
+      "piscine",
+      "oklyn",
+      "filtration",
+      "pH",
+      "redox",
+      "ORP",
+      "coffret"
+    ]
   }
 }

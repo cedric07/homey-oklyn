@@ -1,0 +1,34 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Filtration mode",
+    "fr": "Mode filtration"
+  },
+  "values": [
+    {
+      "id": "auto",
+      "title": {
+        "en": "Auto",
+        "fr": "Auto"
+      }
+    },
+    {
+      "id": "on",
+      "title": {
+        "en": "On",
+        "fr": "Marche"
+      }
+    },
+    {
+      "id": "off",
+      "title": {
+        "en": "Off",
+        "fr": "Arrêt"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "icon": "/assets/capabilities/oklyn_pump_mode.svg"
+}

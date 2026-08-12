@@ -1,0 +1,112 @@
+{
+  "name": {
+    "en": "Oklyn",
+    "fr": "Oklyn"
+  },
+  "height": 280,
+  "transparent": true,
+  "devices": {
+    "type": "app",
+    "singular": true
+  },
+  "settings": [
+    {
+      "id": "transparent",
+      "type": "checkbox",
+      "value": false,
+      "title": {
+        "en": "Transparent background",
+        "fr": "Fond transparent"
+      },
+      "hint": {
+        "en": "Hide the card background and shadow.",
+        "fr": "Masque le fond et l'ombre de la carte."
+      }
+    },
+    {
+      "id": "show_filtration",
+      "type": "checkbox",
+      "value": true,
+      "title": {
+        "en": "Show filtration",
+        "fr": "Afficher la filtration"
+      }
+    },
+    {
+      "id": "show_ph",
+      "type": "checkbox",
+      "value": true,
+      "title": {
+        "en": "Show pH",
+        "fr": "Afficher le pH"
+      }
+    },
+    {
+      "id": "show_orp",
+      "type": "checkbox",
+      "value": true,
+      "title": {
+        "en": "Show ORP",
+        "fr": "Afficher le RedOx"
+      }
+    },
+    {
+      "id": "show_salt",
+      "type": "checkbox",
+      "value": true,
+      "title": {
+        "en": "Show salt",
+        "fr": "Afficher le sel"
+      },
+      "hint": {
+        "en": "Hidden automatically if the sensor is absent.",
+        "fr": "Masqué automatiquement si la sonde est absente."
+      }
+    },
+    {
+      "id": "show_water",
+      "type": "checkbox",
+      "value": true,
+      "title": {
+        "en": "Show water temperature",
+        "fr": "Afficher la température eau"
+      }
+    },
+    {
+      "id": "show_air",
+      "type": "checkbox",
+      "value": true,
+      "title": {
+        "en": "Show air temperature",
+        "fr": "Afficher la température air"
+      }
+    },
+    {
+      "id": "show_aux",
+      "type": "checkbox",
+      "value": true,
+      "title": {
+        "en": "Show auxiliaries",
+        "fr": "Afficher les auxiliaires"
+      },
+      "hint": {
+        "en": "Only for Aux configured on the device.",
+        "fr": "Uniquement pour les Aux configurés sur l'appareil."
+      }
+    }
+  ],
+  "api": {
+    "getStatus": {
+      "method": "GET",
+      "path": "/"
+    },
+    "setPumpMode": {
+      "method": "PUT",
+      "path": "/pump"
+    },
+    "setAux": {
+      "method": "PUT",
+      "path": "/aux"
+    }
+  }
+}

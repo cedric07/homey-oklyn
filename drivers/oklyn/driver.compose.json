@@ -1,0 +1,126 @@
+{
+  "name": {
+    "en": "Oklyn controller",
+    "fr": "Coffret Oklyn"
+  },
+  "class": "sensor",
+  "capabilities": [
+    "measure_temperature.water",
+    "measure_temperature.air",
+    "measure_ph",
+    "measure_orp",
+    "measure_salt",
+    "oklyn_pump_mode",
+    "oklyn_filtration_running",
+    "alarm_generic.ph",
+    "alarm_generic.orp",
+    "alarm_generic.salt"
+  ],
+  "capabilitiesOptions": {
+    "measure_temperature.water": {
+      "title": {
+        "en": "Water temperature",
+        "fr": "Température de l'eau"
+      }
+    },
+    "measure_temperature.air": {
+      "title": {
+        "en": "Air temperature",
+        "fr": "Température de l'air"
+      }
+    },
+    "alarm_generic.ph": {
+      "title": {
+        "en": "pH alert",
+        "fr": "Alerte pH"
+      },
+      "titleTrue": {
+        "en": "pH alert on",
+        "fr": "Alerte pH active"
+      },
+      "titleFalse": {
+        "en": "pH alert off",
+        "fr": "Alerte pH inactive"
+      },
+      "insightsTitleTrue": {
+        "en": "pH alert turned on",
+        "fr": "Alerte pH activée"
+      },
+      "insightsTitleFalse": {
+        "en": "pH alert turned off",
+        "fr": "Alerte pH désactivée"
+      }
+    },
+    "alarm_generic.orp": {
+      "title": {
+        "en": "ORP alert",
+        "fr": "Alerte RedOx"
+      },
+      "titleTrue": {
+        "en": "ORP alert on",
+        "fr": "Alerte RedOx active"
+      },
+      "titleFalse": {
+        "en": "ORP alert off",
+        "fr": "Alerte RedOx inactive"
+      },
+      "insightsTitleTrue": {
+        "en": "ORP alert turned on",
+        "fr": "Alerte RedOx activée"
+      },
+      "insightsTitleFalse": {
+        "en": "ORP alert turned off",
+        "fr": "Alerte RedOx désactivée"
+      }
+    },
+    "alarm_generic.salt": {
+      "title": {
+        "en": "Salt alert",
+        "fr": "Alerte sel"
+      },
+      "titleTrue": {
+        "en": "Salt alert on",
+        "fr": "Alerte sel active"
+      },
+      "titleFalse": {
+        "en": "Salt alert off",
+        "fr": "Alerte sel inactive"
+      },
+      "insightsTitleTrue": {
+        "en": "Salt alert turned on",
+        "fr": "Alerte sel activée"
+      },
+      "insightsTitleFalse": {
+        "en": "Salt alert turned off",
+        "fr": "Alerte sel désactivée"
+      }
+    }
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "cloud"
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      },
+      "options": {
+        "singular": true
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ]
+}

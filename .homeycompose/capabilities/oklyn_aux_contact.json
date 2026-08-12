@@ -1,0 +1,28 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Auxiliary contact",
+    "fr": "Contact auxiliaire"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "insights": true,
+  "titleTrue": {
+    "en": "On",
+    "fr": "Marche"
+  },
+  "titleFalse": {
+    "en": "Off",
+    "fr": "Arrêt"
+  },
+  "insightsTitleTrue": {
+    "en": "Auxiliary turned on",
+    "fr": "Auxiliaire activé"
+  },
+  "insightsTitleFalse": {
+    "en": "Auxiliary turned off",
+    "fr": "Auxiliaire désactivé"
+  },
+  "icon": "/assets/capabilities/oklyn_aux_contact.svg"
+}

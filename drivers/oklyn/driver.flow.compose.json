@@ -1,0 +1,577 @@
+{
+  "triggers": [
+    {
+      "id": "filtration_started",
+      "title": {
+        "en": "Filtration started",
+        "fr": "Filtration démarrée"
+      },
+      "titleFormatted": {
+        "en": "Filtration started",
+        "fr": "Filtration démarrée"
+      },
+      "highlight": true
+    },
+    {
+      "id": "filtration_stopped",
+      "title": {
+        "en": "Filtration stopped",
+        "fr": "Filtration arrêtée"
+      },
+      "titleFormatted": {
+        "en": "Filtration stopped",
+        "fr": "Filtration arrêtée"
+      }
+    },
+    {
+      "id": "measure_status_changed",
+      "title": {
+        "en": "Water quality status changed",
+        "fr": "Statut qualité d'eau modifié"
+      },
+      "titleFormatted": {
+        "en": "Water quality status changed",
+        "fr": "Statut qualité d'eau modifié"
+      },
+      "hint": {
+        "en": "Starts when Oklyn changes a measure (pH, ORP, salt, water or air temperature) to normal, warning or danger. Use the Measure, Status and Value tags in the Flow.",
+        "fr": "Se déclenche quand Oklyn passe une mesure (pH, RedOx, sel, température eau ou air) en normal, avertissement ou danger. Utilise les tags Mesure, Statut et Valeur dans le Flow."
+      },
+      "tokens": [
+        {
+          "name": "measure",
+          "type": "string",
+          "title": {
+            "en": "Measure",
+            "fr": "Mesure"
+          },
+          "example": "ph"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "title": {
+            "en": "Status",
+            "fr": "Statut"
+          },
+          "example": "warning"
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "title": {
+            "en": "Value",
+            "fr": "Valeur"
+          },
+          "example": 7.2
+        }
+      ],
+      "highlight": true
+    }
+  ],
+  "conditions": [
+    {
+      "id": "filtration_running",
+      "title": {
+        "en": "Filtration !{{is|isn't}} running",
+        "fr": "Filtration !{{en marche|à l'arrêt}}"
+      },
+      "titleFormatted": {
+        "en": "Filtration !{{is|isn't}} running",
+        "fr": "Filtration !{{en marche|à l'arrêt}}"
+      },
+      "highlight": true
+    },
+    {
+      "id": "pump_mode_is",
+      "title": {
+        "en": "Filtration mode !{{is|isn't}}",
+        "fr": "Mode filtration !{{est|n'est pas}}"
+      },
+      "titleFormatted": {
+        "en": "Filtration mode !{{is|isn't}} [[mode]]",
+        "fr": "Mode filtration !{{est|n'est pas}} [[mode]]"
+      },
+      "args": [
+        {
+          "name": "mode",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "label": {
+                "en": "Auto",
+                "fr": "Auto"
+              },
+              "title": {
+                "en": "Auto",
+                "fr": "Auto"
+              }
+            },
+            {
+              "id": "on",
+              "label": {
+                "en": "On",
+                "fr": "Marche"
+              },
+              "title": {
+                "en": "On",
+                "fr": "Marche"
+              }
+            },
+            {
+              "id": "off",
+              "label": {
+                "en": "Off",
+                "fr": "Arrêt"
+              },
+              "title": {
+                "en": "Off",
+                "fr": "Arrêt"
+              }
+            }
+          ],
+          "title": {
+            "en": "Mode",
+            "fr": "Mode"
+          }
+        }
+      ]
+    },
+    {
+      "id": "aux_is_on",
+      "title": {
+        "en": "Auxiliary !{{is|isn't}} on",
+        "fr": "Auxiliaire !{{activé|désactivé}}"
+      },
+      "titleFormatted": {
+        "en": "[[aux]] !{{is|isn't}} on",
+        "fr": "[[aux]] !{{activé|désactivé}}"
+      },
+      "args": [
+        {
+          "name": "aux",
+          "type": "autocomplete",
+          "title": {
+            "en": "Auxiliary",
+            "fr": "Auxiliaire"
+          },
+          "placeholder": {
+            "en": "Auxiliary",
+            "fr": "Auxiliaire"
+          }
+        }
+      ]
+    },
+    {
+      "id": "measure_status_is",
+      "title": {
+        "en": "Measurement status !{{is|isn't}}",
+        "fr": "Statut de mesure !{{est|n'est pas}}"
+      },
+      "titleFormatted": {
+        "en": "[[measure]] status !{{is|isn't}} [[status]]",
+        "fr": "Statut [[measure]] !{{est|n'est pas}} [[status]]"
+      },
+      "args": [
+        {
+          "name": "measure",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "ph",
+              "label": {
+                "en": "pH",
+                "fr": "pH"
+              },
+              "title": {
+                "en": "pH",
+                "fr": "pH"
+              }
+            },
+            {
+              "id": "orp",
+              "label": {
+                "en": "ORP",
+                "fr": "RedOx"
+              },
+              "title": {
+                "en": "ORP",
+                "fr": "RedOx"
+              }
+            },
+            {
+              "id": "salt",
+              "label": {
+                "en": "Salt",
+                "fr": "Sel"
+              },
+              "title": {
+                "en": "Salt",
+                "fr": "Sel"
+              }
+            },
+            {
+              "id": "water",
+              "label": {
+                "en": "Water temperature",
+                "fr": "Température eau"
+              },
+              "title": {
+                "en": "Water temperature",
+                "fr": "Température eau"
+              }
+            },
+            {
+              "id": "air",
+              "label": {
+                "en": "Air temperature",
+                "fr": "Température air"
+              },
+              "title": {
+                "en": "Air temperature",
+                "fr": "Température air"
+              }
+            }
+          ],
+          "title": {
+            "en": "Measure",
+            "fr": "Mesure"
+          }
+        },
+        {
+          "name": "status",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "normal",
+              "label": {
+                "en": "Normal",
+                "fr": "Normal"
+              },
+              "title": {
+                "en": "Normal",
+                "fr": "Normal"
+              }
+            },
+            {
+              "id": "warning",
+              "label": {
+                "en": "Warning",
+                "fr": "Avertissement"
+              },
+              "title": {
+                "en": "Warning",
+                "fr": "Avertissement"
+              }
+            },
+            {
+              "id": "danger",
+              "label": {
+                "en": "Danger",
+                "fr": "Danger"
+              },
+              "title": {
+                "en": "Danger",
+                "fr": "Danger"
+              }
+            }
+          ],
+          "title": {
+            "en": "Status",
+            "fr": "Statut"
+          }
+        }
+      ]
+    },
+    {
+      "id": "measure_above",
+      "title": {
+        "en": "Measurement is above",
+        "fr": "Mesure supérieure à"
+      },
+      "titleFormatted": {
+        "en": "[[measure]] is above [[value]]",
+        "fr": "[[measure]] supérieur à [[value]]"
+      },
+      "args": [
+        {
+          "name": "measure",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "ph",
+              "label": {
+                "en": "pH",
+                "fr": "pH"
+              },
+              "title": {
+                "en": "pH",
+                "fr": "pH"
+              }
+            },
+            {
+              "id": "orp",
+              "label": {
+                "en": "ORP",
+                "fr": "RedOx"
+              },
+              "title": {
+                "en": "ORP",
+                "fr": "RedOx"
+              }
+            },
+            {
+              "id": "salt",
+              "label": {
+                "en": "Salt",
+                "fr": "Sel"
+              },
+              "title": {
+                "en": "Salt",
+                "fr": "Sel"
+              }
+            },
+            {
+              "id": "water",
+              "label": {
+                "en": "Water temperature",
+                "fr": "Température eau"
+              },
+              "title": {
+                "en": "Water temperature",
+                "fr": "Température eau"
+              }
+            },
+            {
+              "id": "air",
+              "label": {
+                "en": "Air temperature",
+                "fr": "Température air"
+              },
+              "title": {
+                "en": "Air temperature",
+                "fr": "Température air"
+              }
+            }
+          ],
+          "title": {
+            "en": "Measure",
+            "fr": "Mesure"
+          }
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "title": {
+            "en": "Threshold",
+            "fr": "Seuil"
+          }
+        }
+      ]
+    },
+    {
+      "id": "measure_below",
+      "title": {
+        "en": "Measurement is below",
+        "fr": "Mesure inférieure à"
+      },
+      "titleFormatted": {
+        "en": "[[measure]] is below [[value]]",
+        "fr": "[[measure]] inférieur à [[value]]"
+      },
+      "args": [
+        {
+          "name": "measure",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "ph",
+              "label": {
+                "en": "pH",
+                "fr": "pH"
+              },
+              "title": {
+                "en": "pH",
+                "fr": "pH"
+              }
+            },
+            {
+              "id": "orp",
+              "label": {
+                "en": "ORP",
+                "fr": "RedOx"
+              },
+              "title": {
+                "en": "ORP",
+                "fr": "RedOx"
+              }
+            },
+            {
+              "id": "salt",
+              "label": {
+                "en": "Salt",
+                "fr": "Sel"
+              },
+              "title": {
+                "en": "Salt",
+                "fr": "Sel"
+              }
+            },
+            {
+              "id": "water",
+              "label": {
+                "en": "Water temperature",
+                "fr": "Température eau"
+              },
+              "title": {
+                "en": "Water temperature",
+                "fr": "Température eau"
+              }
+            },
+            {
+              "id": "air",
+              "label": {
+                "en": "Air temperature",
+                "fr": "Température air"
+              },
+              "title": {
+                "en": "Air temperature",
+                "fr": "Température air"
+              }
+            }
+          ],
+          "title": {
+            "en": "Measure",
+            "fr": "Mesure"
+          }
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "title": {
+            "en": "Threshold",
+            "fr": "Seuil"
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "set_pump_mode",
+      "title": {
+        "en": "Set filtration mode",
+        "fr": "Régler le mode de filtration"
+      },
+      "titleFormatted": {
+        "en": "Set filtration mode to [[mode]]",
+        "fr": "Régler le mode de filtration sur [[mode]]"
+      },
+      "highlight": true,
+      "args": [
+        {
+          "name": "mode",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "label": {
+                "en": "Auto",
+                "fr": "Auto"
+              },
+              "title": {
+                "en": "Auto",
+                "fr": "Auto"
+              }
+            },
+            {
+              "id": "on",
+              "label": {
+                "en": "On",
+                "fr": "Marche"
+              },
+              "title": {
+                "en": "On",
+                "fr": "Marche"
+              }
+            },
+            {
+              "id": "off",
+              "label": {
+                "en": "Off",
+                "fr": "Arrêt"
+              },
+              "title": {
+                "en": "Off",
+                "fr": "Arrêt"
+              }
+            }
+          ],
+          "title": {
+            "en": "Mode",
+            "fr": "Mode"
+          }
+        }
+      ]
+    },
+    {
+      "id": "set_aux",
+      "title": {
+        "en": "Set auxiliary switch",
+        "fr": "Régler un auxiliaire"
+      },
+      "titleFormatted": {
+        "en": "Turn [[aux]] [[state]]",
+        "fr": "Mettre [[aux]] sur [[state]]"
+      },
+      "highlight": true,
+      "args": [
+        {
+          "name": "aux",
+          "type": "autocomplete",
+          "title": {
+            "en": "Auxiliary",
+            "fr": "Auxiliaire"
+          },
+          "placeholder": {
+            "en": "Auxiliary",
+            "fr": "Auxiliaire"
+          }
+        },
+        {
+          "name": "state",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "on",
+              "label": {
+                "en": "On",
+                "fr": "Marche"
+              },
+              "title": {
+                "en": "On",
+                "fr": "Marche"
+              }
+            },
+            {
+              "id": "off",
+              "label": {
+                "en": "Off",
+                "fr": "Arrêt"
+              },
+              "title": {
+                "en": "Off",
+                "fr": "Arrêt"
+              }
+            }
+          ],
+          "title": {
+            "en": "State",
+            "fr": "État"
+          }
+        }
+      ]
+    }
+  ]
+}
