@@ -21,7 +21,8 @@
       "titleFormatted": {
         "en": "Filtration stopped",
         "fr": "Filtration arrêtée"
-      }
+      },
+      "highlight": true
     },
     {
       "id": "measure_status_changed",
