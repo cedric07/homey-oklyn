@@ -2,5 +2,9 @@
   "1.0.0": {
     "en": "Initial release: Oklyn pool monitoring & control, Flow cards and dashboard widget.",
     "fr": "Première version : surveillance et pilotage Oklyn, cartes Flow et widget tableau de bord."
+  },
+  "1.0.1": {
+    "en": "Minor fix (device image and readme)",
+    "fr": "Correction mineure (image de l'appareil et readme)"
   }
 }
