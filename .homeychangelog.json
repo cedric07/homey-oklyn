@@ -6,5 +6,9 @@
   "1.0.1": {
     "en": "Minor fix (device image and readme)",
     "fr": "Correction mineure (image de l'appareil et readme)"
+  },
+  "1.0.2": {
+    "en": "Fix flow cards",
+    "fr": "Correction des cartes Flow"
   }
 }
