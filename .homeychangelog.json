@@ -10,5 +10,9 @@
   "1.0.2": {
     "en": "Fix flow cards",
     "fr": "Correction des cartes Flow"
+  },
+  "1.0.3": {
+    "en": "Fix flow triggers",
+    "fr": "Correction des déclencheurs Flow"
   }
 }
