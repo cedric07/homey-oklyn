@@ -68,6 +68,182 @@
         }
       ],
       "highlight": true
+    },
+    {
+      "id": "measure_ph_changed",
+      "title": {
+        "en": "The pH level changed",
+        "fr": "Le niveau de pH a changé"
+      },
+      "titleFormatted": {
+        "en": "The pH level changed",
+        "fr": "Le niveau de pH a changé"
+      },
+      "tokens": [
+        {
+          "name": "measure_ph",
+          "type": "number",
+          "title": {
+            "en": "pH",
+            "fr": "pH"
+          },
+          "example": 7.2
+        }
+      ]
+    },
+    {
+      "id": "measure_orp_changed",
+      "title": {
+        "en": "The ORP level changed",
+        "fr": "Le RedOx a changé"
+      },
+      "titleFormatted": {
+        "en": "The ORP level changed",
+        "fr": "Le RedOx a changé"
+      },
+      "tokens": [
+        {
+          "name": "measure_orp",
+          "type": "number",
+          "title": {
+            "en": "ORP",
+            "fr": "RedOx"
+          },
+          "example": 650
+        }
+      ]
+    },
+    {
+      "id": "measure_salt_changed",
+      "title": {
+        "en": "The salt level changed",
+        "fr": "Le taux de sel a changé"
+      },
+      "titleFormatted": {
+        "en": "The salt level changed",
+        "fr": "Le taux de sel a changé"
+      },
+      "tokens": [
+        {
+          "name": "measure_salt",
+          "type": "number",
+          "title": {
+            "en": "Salt",
+            "fr": "Sel"
+          },
+          "example": 3.5
+        }
+      ]
+    },
+    {
+      "id": "measure_temperature.water_changed",
+      "title": {
+        "en": "The water temperature changed",
+        "fr": "La température de l'eau a changé"
+      },
+      "titleFormatted": {
+        "en": "The water temperature changed",
+        "fr": "La température de l'eau a changé"
+      },
+      "tokens": [
+        {
+          "name": "measure_temperature.water",
+          "type": "number",
+          "title": {
+            "en": "Water temperature",
+            "fr": "Température eau"
+          },
+          "example": 27.5
+        }
+      ]
+    },
+    {
+      "id": "measure_temperature.air_changed",
+      "title": {
+        "en": "The air temperature changed",
+        "fr": "La température de l'air a changé"
+      },
+      "titleFormatted": {
+        "en": "The air temperature changed",
+        "fr": "La température de l'air a changé"
+      },
+      "tokens": [
+        {
+          "name": "measure_temperature.air",
+          "type": "number",
+          "title": {
+            "en": "Air temperature",
+            "fr": "Température air"
+          },
+          "example": 31
+        }
+      ]
+    },
+    {
+      "id": "alarm_generic.ph_true",
+      "title": {
+        "en": "The pH alert turned on",
+        "fr": "L'alerte pH s'est activée"
+      },
+      "titleFormatted": {
+        "en": "The pH alert turned on",
+        "fr": "L'alerte pH s'est activée"
+      }
+    },
+    {
+      "id": "alarm_generic.ph_false",
+      "title": {
+        "en": "The pH alert turned off",
+        "fr": "L'alerte pH s'est désactivée"
+      },
+      "titleFormatted": {
+        "en": "The pH alert turned off",
+        "fr": "L'alerte pH s'est désactivée"
+      }
+    },
+    {
+      "id": "alarm_generic.orp_true",
+      "title": {
+        "en": "The ORP alert turned on",
+        "fr": "L'alerte RedOx s'est activée"
+      },
+      "titleFormatted": {
+        "en": "The ORP alert turned on",
+        "fr": "L'alerte RedOx s'est activée"
+      }
+    },
+    {
+      "id": "alarm_generic.orp_false",
+      "title": {
+        "en": "The ORP alert turned off",
+        "fr": "L'alerte RedOx s'est désactivée"
+      },
+      "titleFormatted": {
+        "en": "The ORP alert turned off",
+        "fr": "L'alerte RedOx s'est désactivée"
+      }
+    },
+    {
+      "id": "alarm_generic.salt_true",
+      "title": {
+        "en": "The salt alert turned on",
+        "fr": "L'alerte sel s'est activée"
+      },
+      "titleFormatted": {
+        "en": "The salt alert turned on",
+        "fr": "L'alerte sel s'est activée"
+      }
+    },
+    {
+      "id": "alarm_generic.salt_false",
+      "title": {
+        "en": "The salt alert turned off",
+        "fr": "L'alerte sel s'est désactivée"
+      },
+      "titleFormatted": {
+        "en": "The salt alert turned off",
+        "fr": "L'alerte sel s'est désactivée"
+      }
     }
   ],
   "conditions": [
