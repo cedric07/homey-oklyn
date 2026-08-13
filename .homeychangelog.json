@@ -14,5 +14,9 @@
   "1.0.3": {
     "en": "Fix flow triggers",
     "fr": "Correction des déclencheurs Flow"
+  },
+  "1.0.4": {
+    "en": "Change category app",
+    "fr": "Changement de catégorie de l'application"
   }
 }
