@@ -18,6 +18,17 @@ function hasCapability(device, capabilityId) {
   return device.hasCapability(capabilityId);
 }
 
+function auxMode(device, aux) {
+  return device.getAuxMode ? device.getAuxMode(aux) : 'unused';
+}
+
+function auxTitle(device, aux) {
+  if (device._resolveAuxTitle) {
+    return device._resolveAuxTitle(aux);
+  }
+  return aux === 'aux2' ? 'Aux 2' : 'Aux 1';
+}
+
 module.exports = {
   async getStatus({ homey, query }) {
     const device = await getDevice(homey, query);
@@ -25,7 +36,8 @@ module.exports = {
       return { error: 'no_device' };
     }
 
-    const settings = device.getSettings();
+    const aux1Mode = auxMode(device, 'aux1');
+    const aux2Mode = auxMode(device, 'aux2');
     const capabilities = {};
     for (const capabilityId of device.getCapabilities()) {
       capabilities[capabilityId] = device.getCapabilityValue(capabilityId);
@@ -39,14 +51,10 @@ module.exports = {
         ? device.getUnavailableMessage()
         : null,
       settings: {
-        aux1_mode: settings.aux1_mode,
-        aux2_mode: settings.aux2_mode,
-        aux1_title: device._resolveAuxTitle
-          ? device._resolveAuxTitle('aux1', settings)
-          : 'Aux 1',
-        aux2_title: device._resolveAuxTitle
-          ? device._resolveAuxTitle('aux2', settings)
-          : 'Aux 2',
+        aux1_mode: aux1Mode,
+        aux2_mode: aux2Mode,
+        aux1_title: auxTitle(device, 'aux1'),
+        aux2_title: auxTitle(device, 'aux2'),
       },
       presence: {
         water: hasCapability(device, 'measure_temperature.water'),
@@ -54,8 +62,8 @@ module.exports = {
         ph: hasCapability(device, 'measure_ph'),
         orp: hasCapability(device, 'measure_orp'),
         salt: hasCapability(device, 'measure_salt'),
-        aux1: settings.aux1_mode && settings.aux1_mode !== 'unused',
-        aux2: settings.aux2_mode && settings.aux2_mode !== 'unused',
+        aux1: aux1Mode !== 'unused',
+        aux2: aux2Mode !== 'unused',
       },
       statuses: device._measureStatuses || {},
       lastSyncAt: device._lastSyncAt || null,

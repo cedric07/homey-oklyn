@@ -67,16 +67,17 @@ module.exports = class OklynDriver extends Homey.Driver {
   _autocompleteAux(device, query, { switchesOnly }) {
     if (!device) return [];
 
-    const settings = device.getSettings();
     const q = String(query || '').toLowerCase().trim();
     const results = [];
 
     for (const aux of ['aux1', 'aux2']) {
-      const mode = settings[`${aux}_mode`];
+      const mode = device.getAuxMode ? device.getAuxMode(aux) : 'unused';
       if (!mode || mode === 'unused') continue;
       if (switchesOnly && mode !== 'switch') continue;
 
-      const name = device._resolveAuxTitle(aux, settings);
+      const name = device._resolveAuxTitle
+        ? device._resolveAuxTitle(aux)
+        : aux;
       if (q && !String(name).toLowerCase().includes(q)) continue;
       results.push({ id: aux, name });
     }
@@ -108,13 +109,6 @@ module.exports = class OklynDriver extends Homey.Driver {
         settings: {
           notify_danger: true,
           notify_warning: false,
-          // Aux modes must be set manually (API has no interrupteur/régul/enabled flag).
-          aux1_mode: 'unused',
-          aux1_label: 'electrolyzer',
-          aux1_custom_label: '',
-          aux2_mode: 'unused',
-          aux2_label: 'light',
-          aux2_custom_label: '',
         },
       }));
   }

@@ -17,18 +17,51 @@ const ALARM_CAPABILITY_MAP = {
   salt: 'alarm_generic.salt',
 };
 
-const AUX_LABEL_KEYS = {
-  light: 'settings.aux_label_light',
-  heating: 'settings.aux_label_heating',
-  electrolyzer: 'settings.aux_label_electrolyzer',
-};
-
 function auxOnoffId(aux) {
   return aux === 'aux2' ? 'onoff.aux2' : 'onoff.aux1';
 }
 
 function auxContactId(aux) {
   return aux === 'aux2' ? 'oklyn_aux_contact.aux2' : 'oklyn_aux_contact.aux1';
+}
+
+/**
+ * Map Aux API fields to Homey mode.
+ * @returns {'switch'|'regul'|'unused'|null} null when enabled/mode are absent
+ */
+function mapApiAuxToHomeyMode(data) {
+  if (!data || typeof data !== 'object') return null;
+
+  const hasEnabled = typeof data.enabled === 'boolean';
+  const mode = typeof data.mode === 'string' ? data.mode : '';
+  const hasMode = mode.length > 0;
+  if (!hasEnabled && !hasMode) return null;
+
+  if (hasEnabled && data.enabled === false) return 'unused';
+
+  if (mode === 'switch' || mode.startsWith('pulse')) return 'switch';
+  if (mode === 'regulredox' || mode.startsWith('regul')) return 'regul';
+
+  return null;
+}
+
+/**
+ * Prefer `status` when it is on/off; never treat values like "regulredox" as on.
+ * @returns {'on'|'off'|null}
+ */
+function resolveAuxReportedState(data) {
+  if (!data || typeof data !== 'object') return null;
+
+  if (data.status === 'on' || data.status === 'off') {
+    return data.status;
+  }
+
+  const raw = data.aux || data.aux2;
+  if (raw === 'on' || raw === 'off') {
+    return raw;
+  }
+
+  return null;
 }
 
 module.exports = class OklynDevice extends Homey.Device {
@@ -75,13 +108,6 @@ module.exports = class OklynDevice extends Homey.Device {
     this._schedulePoll();
   }
 
-  async onSettings({ newSettings, changedKeys }) {
-    if (changedKeys.some((key) => key.startsWith('aux'))) {
-      await this._applyAuxCapabilities(newSettings);
-      await this._updateCapabilityTitles(newSettings);
-    }
-  }
-
   async onDeleted() {
     this._clearPoll();
   }
@@ -123,9 +149,16 @@ module.exports = class OklynDevice extends Homey.Device {
     return this._measureStatuses[measure] || null;
   }
 
+  /**
+   * Last Aux mode derived from Oklyn API (`switch` | `regul` | `unused`).
+   * @param {'aux1'|'aux2'} aux
+   */
+  getAuxMode(aux) {
+    return this._getAuxApiSide(aux).mode;
+  }
+
   isAuxOn(aux) {
-    const settings = this.getSettings();
-    const mode = aux === 'aux2' ? settings.aux2_mode : settings.aux1_mode;
+    const mode = this.getAuxMode(aux);
 
     if (mode === 'switch') {
       const capabilityId = auxOnoffId(aux);
@@ -191,12 +224,11 @@ module.exports = class OklynDevice extends Homey.Device {
   }
 
   async _setAuxSwitch(aux, on) {
-    const settings = this.getSettings();
-    const mode = aux === 'aux2' ? settings.aux2_mode : settings.aux1_mode;
-    if (mode !== 'switch') {
+    if (this.getAuxMode(aux) !== 'switch') {
       throw new Error(this.homey.__('errors.aux_not_switchable'));
     }
 
+    const stored = this._getAuxApiSide(aux);
     const apiKey = aux === 'aux2' ? 'aux2' : 'aux';
     const api = this.getApi();
     let result = await api.setAux(this.getOklynId(), apiKey, on ? 'on' : 'off');
@@ -204,19 +236,19 @@ module.exports = class OklynDevice extends Homey.Device {
       result = {};
     }
 
-    // PUT may omit status; keep the UI in sync with the commanded value.
-    const reported = result.status || result.aux || result.aux2;
-    if (!reported) {
-      result = {
-        ...result,
-        available: true,
-        [apiKey]: on ? 'on' : 'off',
-      };
-    } else if (result.available === undefined) {
-      result = { ...result, available: true };
-    }
+    // PUT may omit status / mode; keep UI + store in sync with known switch state.
+    const reported = resolveAuxReportedState(result);
+    result = {
+      enabled: true,
+      mode: 'switch',
+      name: stored.name,
+      ...result,
+      available: true,
+      status: reported || (on ? 'on' : 'off'),
+      [apiKey]: reported || (on ? 'on' : 'off'),
+    };
 
-    await this._applyAux(aux, result, mode);
+    await this._applyAux(aux, result);
   }
 
   async syncNow() {
@@ -280,9 +312,8 @@ module.exports = class OklynDevice extends Homey.Device {
       await this._applyPump(pump);
     }
 
-    const settings = this.getSettings();
-    await this._applyAux('aux1', aux.aux, settings.aux1_mode);
-    await this._applyAux('aux2', aux.aux2, settings.aux2_mode);
+    await this._applyAux('aux1', aux.aux);
+    await this._applyAux('aux2', aux.aux2);
   }
 
   async _applyPump(pump) {
@@ -304,19 +335,28 @@ module.exports = class OklynDevice extends Homey.Device {
     }
   }
 
-  async _applyAux(aux, data, mode) {
+  async _applyAux(aux, data) {
     if (!data || data.available === false) {
+      await this._storeAuxApiSide(aux, { mode: 'unused', name: '', enabled: false });
       await this._removeAuxCapabilities(aux);
       return;
     }
 
-    const reported = data.status || data.aux || data.aux2;
+    const mode = mapApiAuxToHomeyMode(data);
+    const name = typeof data.name === 'string' ? data.name.trim() : '';
+    const enabled = data.enabled === true;
+
+    // Missing enabled/mode (or explicitly unused) → no Aux capabilities.
+    if (mode === null || mode === 'unused') {
+      await this._storeAuxApiSide(aux, { mode: 'unused', name, enabled });
+      await this._removeAuxCapabilities(aux);
+      return;
+    }
+
+    await this._storeAuxApiSide(aux, { mode, name, enabled });
+
+    const reported = resolveAuxReportedState(data);
     const isOn = reported === 'on';
-
-    if (mode === 'unused') {
-      await this._removeAuxCapabilities(aux);
-      return;
-    }
 
     const onoffId = auxOnoffId(aux);
     const contactId = auxContactId(aux);
@@ -327,12 +367,12 @@ module.exports = class OklynDevice extends Homey.Device {
       }
       if (!this.hasCapability(onoffId)) {
         await this.addCapability(onoffId).catch(this.error);
-        await this._updateCapabilityTitles();
       }
       // Skip UI update when API returned no usable state (avoid false OFF).
       if (reported) {
         await this._setCapabilityValue(onoffId, isOn);
       }
+      await this._updateCapabilityTitles();
       return;
     }
 
@@ -340,18 +380,52 @@ module.exports = class OklynDevice extends Homey.Device {
       if (this.hasCapability(onoffId)) {
         await this.removeCapability(onoffId).catch(this.error);
       }
-      let added = false;
       if (!this.hasCapability(contactId)) {
         await this.addCapability(contactId).catch(this.error);
-        added = true;
       }
       if (reported) {
         await this._setCapabilityValue(contactId, isOn);
       }
-      if (added) {
-        await this._updateCapabilityTitles();
-      }
+      await this._updateCapabilityTitles();
     }
+  }
+
+  _getAuxApi() {
+    const stored = this.getStoreValue('auxApi');
+    return stored && typeof stored === 'object' ? stored : {};
+  }
+
+  /**
+   * @param {'aux1'|'aux2'} aux
+   * @returns {{ mode: 'switch'|'regul'|'unused', name: string, enabled: boolean }}
+   */
+  _getAuxApiSide(aux) {
+    const side = this._getAuxApi()[aux];
+    if (!side || typeof side !== 'object') {
+      return { mode: 'unused', name: '', enabled: false };
+    }
+
+    const mode = side.mode === 'switch' || side.mode === 'regul' ? side.mode : 'unused';
+    return {
+      mode,
+      name: typeof side.name === 'string' ? side.name : '',
+      enabled: side.enabled === true,
+    };
+  }
+
+  /**
+   * Persist last Aux API sync for mode / title / presence.
+   * @param {'aux1'|'aux2'} aux
+   * @param {{ mode: string, name?: string, enabled?: boolean }} state
+   */
+  async _storeAuxApiSide(aux, state) {
+    const all = { ...this._getAuxApi() };
+    all[aux] = {
+      mode: state.mode === 'switch' || state.mode === 'regul' ? state.mode : 'unused',
+      name: typeof state.name === 'string' ? state.name : '',
+      enabled: state.enabled === true,
+    };
+    await this.setStoreValue('auxApi', all).catch(this.error);
   }
 
   async _handleMeasureStatus(type, status) {
@@ -423,13 +497,14 @@ module.exports = class OklynDevice extends Homey.Device {
     }).catch(this.error);
   }
 
-  async _applyAuxCapabilities(settings = this.getSettings()) {
-    await this._applyAuxCapabilitySide('aux1', settings.aux1_mode);
-    await this._applyAuxCapabilitySide('aux2', settings.aux2_mode);
-    await this._updateCapabilityTitles(settings);
+  async _applyAuxCapabilities() {
+    await this._applyAuxCapabilitySide('aux1');
+    await this._applyAuxCapabilitySide('aux2');
+    await this._updateCapabilityTitles();
   }
 
-  async _applyAuxCapabilitySide(aux, mode) {
+  async _applyAuxCapabilitySide(aux) {
+    const mode = this.getAuxMode(aux);
     const onoffId = auxOnoffId(aux);
     const contactId = auxContactId(aux);
 
@@ -469,12 +544,12 @@ module.exports = class OklynDevice extends Homey.Device {
     }
   }
 
-  async _updateCapabilityTitles(settings = this.getSettings()) {
+  async _updateCapabilityTitles() {
     const options = {};
 
     for (const aux of ['aux1', 'aux2']) {
-      const mode = settings[`${aux}_mode`];
-      const title = this._resolveAuxTitle(aux, settings);
+      const mode = this.getAuxMode(aux);
+      const title = this._resolveAuxTitle(aux);
 
       if (mode === 'switch') {
         const capabilityId = auxOnoffId(aux);
@@ -508,17 +583,14 @@ module.exports = class OklynDevice extends Homey.Device {
     }
   }
 
-  _resolveAuxTitle(aux, settings) {
-    const custom = String(settings[`${aux}_custom_label`] || '').trim();
-    if (custom) return custom;
+  _resolveAuxTitle(aux) {
+    const { name } = this._getAuxApiSide(aux);
+    if (name) return name;
 
-    let labelId = settings[`${aux}_label`];
-    if (!labelId || labelId === 'other' || !AUX_LABEL_KEYS[labelId]) {
-      labelId = settings[`${aux}_mode`] === 'regul' || aux === 'aux1'
-        ? 'electrolyzer'
-        : 'light';
-    }
-    return this.homey.__(AUX_LABEL_KEYS[labelId]);
+    const key = aux === 'aux2'
+      ? 'settings.aux2_default_title'
+      : 'settings.aux1_default_title';
+    return this.homey.__(key);
   }
 
   async _setCapabilityValue(capabilityId, value) {

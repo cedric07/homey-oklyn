@@ -18,5 +18,9 @@
   "1.0.4": {
     "en": "Change category app",
     "fr": "Changement de catégorie de l'application"
+  },
+  "1.0.5": {
+    "en": "Aux configuration comes from the Oklyn API only (enabled, mode, name); manual Aux settings removed.",
+    "fr": "Configuration des auxiliaires uniquement via l'API Oklyn (enabled, mode, name) ; réglages manuels Aux supprimés."
   }
 }

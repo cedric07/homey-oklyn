@@ -35,11 +35,8 @@
     "save": "Save",
     "saved": "Settings saved.",
     "api_token_required": "Please enter your Oklyn API key.",
-    "aux_label_light": "Light",
-    "aux_label_heating": "Heating",
-    "aux_label_electrolyzer": "Electrolyzer",
-    "aux_label_regul": "ORP regulation",
-    "aux_regul_title": "__name__ (read-only)"
+    "aux1_default_title": "Aux 1",
+    "aux2_default_title": "Aux 2"
   },
   "widget": {
     "loading": "Loading…",
